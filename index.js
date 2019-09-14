@@ -20,26 +20,29 @@ client.on('ready', () => {
 })
 
 client.on('guildMemberAdd', (guildMember) => {
-	guildMember.addRole(guildMember.guild.roles.find(role => role.name === 'Victimes'));
+	const guild = guildMember.guild;
+	guildMember.addRole(guild.roles.find(role => role.name === 'Victimes'));
 	guildMember.setNickname(`[0] ${guildMember.user.username}`);
-	guildMember.guild.channels.get('622502380541444116').setName(`${guildMember.guild.members.array().length} personnes`);
+	guild.channels.get('622502380541444116').setName(`${guild.members.array().length} personnes`);
 });
 
-
-
+// TODO Refactor it, it has some duplicated code
 client.on("guildMemberRemove", (guildMember) => {
-	guildMember.guild.channels.get('622502380541444116').setName(`${guildMember.guild.members.array().length} personnes`);
+	// NOTE: Maybe here lays an error, guildMember.guild.(...) is maybe more appropriate
+	guild.channels.get('622502380541444116').setName(`${[...guild.members].length} personnes`);
 });
 
 client.on('messageReactionAdd', (reaction, user) => {
-	if (!user) return;
-	if (user.bot) return;
-	if (!reaction.message.channel.guild) return;
+	if (!user || user.bot || !reaction.message.channel.guild) return;
 	if (reaction.message.channel.id !== '622498999529766942') return;
-	let role = reaction.message.guild.roles.find(role => role.name === "Victimes");
-	reaction.message.guild.member(user).removeRole(role).catch(console.error);
-	role = reaction.message.guild.roles.find(role => role.name === "Racailles du bac à sable");
-	reaction.message.guild.member(user).addRole(role).catch(console.error);
+	const roleVictime = reaction.message.guild.roles.find(role => role.name === "Victimes");
+	const roleRacailles = reaction.message.guild.roles.find(role => role.name === "Racailles du bac à sable");
+	try {
+		reaction.message.guild.member(user).removeRole(roleVictime)
+		reaction.message.guild.member(user).addRole(roleRacailles)	
+	} catch {
+		console.error
+	}
 });
 
 client.on('messageReactionRemove', (reaction, user) => {
@@ -79,10 +82,12 @@ function sendMessage(channel, msg) {
 
 function changeScore(args, message, nbr, msg) {
 	let user;
-	if (args[1].split('!').length == 2)
-		user = message.guild.members.get(args[1].split('!')[1].split('>')[0]);
-	else if (args[1].split('@').length == 2)
-		user = message.guild.members.get(args[1].split('@')[1].split('>')[0]);
+	
+	if (args[0].split('!').length == 2)
+		user = message.guild.members.get(args[0].split('!')[1].split('>')[0]);
+	else if (args[0].split('@').length == 2)
+		user = message.guild.members.get(args[0].split('@')[1].split('>')[0]);
+
 	if (user) {
 		let nickname = user.nickname.split(' ')[1];
 		if (user.nickname.split(' ').length > 2) {
@@ -96,7 +101,7 @@ function changeScore(args, message, nbr, msg) {
 		if (nbr) nbr1 = parseInt(user.nickname.split('[')[1].split(']')[0]) + nbr;
 			
 		user.setNickname(`[${nbr1}] ${nickname}`)
-			.catch(err => sendMessage(message.channel, `${err}`));
+			.catch(err => sendMessage(message.channel, err));
 		sendMessage(message.channel, `${msg} de ${args[1]}!\n${nickname} a maintenant un score de ${nbr1}`);
 	} else {
 		let msg = args[1];
@@ -109,30 +114,20 @@ function changeScore(args, message, nbr, msg) {
 	}
 }
 
-client.on('message', async function (message) {
-	const args = message.content.split(" ");
-	if (args[0] == "!victoire") {
-		if (message.channel.permissionsFor(message.author).has('MANAGE_ROLES'))
+client.on('message', (message) => {
+	const [command, ...args] = message.content.split(" ");
+	if(!message.channel.permissionsFor(message.author).has('MANAGE_ROLES')) return sendMessage(message.channel, `Tu n\'as pas la permission de faire cette commande!`)
+
+	if (command == "!victoire") {
 			changeScore(args, message, 5, 'Victoire');
-		else
-			sendMessage(message.channel, `Tu n\'as pas la permission de faire cette commande!`);
-	} else if (args[0] == "!victimised") {
-		if (message.channel.permissionsFor(message.author).has('MANAGE_ROLES'))
+	} else if (command == "!victimised") {
 			changeScore(args, message, -3, 'Victimisation');
-		else
-			sendMessage(message.channel, `Tu n\'as pas la permission de faire cette commande!`);
-	} else if (args[0] == "!bisounours") {
-		if (message.channel.permissionsFor(message.author).has('MANAGE_ROLES'))
+	} else if (command == "!bisounours") {
 			changeScore(args, message, 20, 'Bisounours');
-		else
-			sendMessage(message.channel, `Tu n\'as pas la permission de faire cette commande!`);
-	} else if (args[0] == "!pute") {
-		if (message.channel.permissionsFor(message.author).has('MANAGE_ROLES'))
+	} else if (command == "!pute") {
 			changeScore(args, message, 0, 'Cette pute');
-		else
-			sendMessage(message.channel, `Tu n\'as pas la permission de faire cette commande!`);
-	} else if (args[0] == '!init') {
-		message.channel.send(message.guild.members.array());
+	} else if (command == '!init') {
+		message.channel.send([...message.guild.members]);
 		message.channel.send(message.channel.permissionsFor(message.author).toArray());
 	}
 });
