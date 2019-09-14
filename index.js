@@ -20,7 +20,7 @@ client.on('ready', () => {
 
 function changeCountMessage(guildMember) {
 	const guild = guildMember.guild;
-	guild.channels.get('622502380541444116').setName(`${guild.members.array().length} personnes`);
+	guild.channels.get('622502380541444116').setName(`${[...guild.members].length} personnes`);
 }
 
 client.on('guildMemberAdd', (guildMember) => {
