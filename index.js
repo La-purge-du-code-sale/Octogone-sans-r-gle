@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
-function setActivity(nbr) {
+const setActivity = (nbr) => {
 	switch(nbr % 5){
 		case 0: client.user.setActivity("la mère de tom", { type: "WATCHING" }); break;
 		case 2: client.user.setActivity("baiser la mère de tom", { type: "PLAYING" }); break;
@@ -18,7 +18,7 @@ client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
 })
 
-function changeCountMessage(guildMember) {
+const changeCountMessage = (guildMember) => {
 	const guild = guildMember.guild;
 	guild.channels.get('622502380541444116').setName(`${[...guild.members].length} personnes`);
 }
@@ -34,43 +34,62 @@ client.on("guildMemberRemove", (guildMember) => {
 	changeCountMessage(guildMember)
 });
 
+const isMessageIrrelevant = (reaction, user) => {
+	if (!user 
+		|| user.bot 
+		|| !reaction.message.channel.guild
+		|| reaction.message.channel.id !== '622498999529766942')
+	{
+		return true;
+	}
+	return false;
+}
+
 client.on('messageReactionAdd', (reaction, user) => {
-	if (!user || user.bot || !reaction.message.channel.guild) return;
-	if (reaction.message.channel.id !== '622498999529766942') return;
+	if (isMessageIrrelevant){
+		return;
+	}
 	const roleVictime = reaction.message.guild.roles.find(role => role.name === "Victimes");
 	const roleRacailles = reaction.message.guild.roles.find(role => role.name === "Racailles du bac à sable");
 	try {
-		reaction.message.guild.member(user).removeRole(roleVictime)
-		reaction.message.guild.member(user).addRole(roleRacailles)	
+		reaction.message.guild.member(user).removeRole(roleVictime);
+		reaction.message.guild.member(user).addRole(roleRacailles);	
 	} catch {
-		console.error
+		console.error;
 	}
 });
 
 client.on('messageReactionRemove', (reaction, user) => {
-	if (!user || user.bot || !reaction.message.channel.guild) return;
-	if (reaction.message.channel.id !== '622498999529766942') return;
+	if (isMessageIrrelevant){
+		return;
+	}
 	const roleVictime = reaction.message.guild.roles.find(role => role.name === "Victimes");
 	const roleRacailles = reaction.message.guild.roles.find(role => role.name === "Racailles du bac à sable");
 	try {
-		reaction.message.guild.member(user).addRole(roleVictime)
-		reaction.message.guild.member(user).removeRole(roleRacailles)	
+		reaction.message.guild.member(user).addRole(roleVictime);
+		reaction.message.guild.member(user).removeRole(roleRacailles);
 	} catch {
-		console.error
+		console.error;
 	}
 });
 
 client.on('raw', packet => {
-	if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
+	if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)){
+		return;
+	}
 	const channel = client.channels.get(packet.d.channel_id);
-	if (channel.messages.has(packet.d.message_id)) return;
+	if (channel.messages.has(packet.d.message_id)){
+		return;
+	}
 	channel.fetchMessage(packet.d.message_id).then(message => {
 		const emoji = packet.d.emoji.id ? `${packet.d.emoji.name}:${packet.d.emoji.id}` : packet.d.emoji.name;
 		const reaction = message.reactions.get(emoji);
-		if (reaction) reaction.users.set(packet.d.user_id, client.users.get(packet.d.user_id));
+		if (reaction){
+			reaction.users.set(packet.d.user_id, client.users.get(packet.d.user_id));
+		}
 		if (packet.t === 'MESSAGE_REACTION_ADD') {
 			client.emit('messageReactionAdd', reaction, client.users.get(packet.d.user_id));
-		}
+		} else
 		if (packet.t === 'MESSAGE_REACTION_REMOVE') {
 			client.emit('messageReactionRemove', reaction, client.users.get(packet.d.user_id));
 		}
@@ -87,10 +106,12 @@ function sendMessage(channel, msg) {
 function changeScore(args, message, nbr, msg) {
 	let user;
 	
-	if (args[0].split('!').length == 2)
+	if (args[0].split('!').length == 2){
 		user = message.guild.members.get(args[0].split('!')[1].split('>')[0]);
-	else if (args[0].split('@').length == 2)
+	} else 
+	if (args[0].split('@').length == 2){
 		user = message.guild.members.get(args[0].split('@')[1].split('>')[0]);
+	}
 
 	if (user) {
 		let nickname = user.nickname.split(' ')[1];
@@ -102,7 +123,9 @@ function changeScore(args, message, nbr, msg) {
 			}
 		}
 		let nbr1 = 0;
-		if (nbr) nbr1 = parseInt(user.nickname.split('[')[1].split(']')[0]) + nbr;
+		if (nbr){
+			nbr1 = parseInt(user.nickname.split('[')[1].split(']')[0]) + nbr;
+		}
 			
 		user.setNickname(`[${nbr1}] ${nickname}`)
 			.catch(err => sendMessage(message.channel, err));
@@ -120,7 +143,9 @@ function changeScore(args, message, nbr, msg) {
 
 client.on('message', (message) => {
 	const [command, ...args] = message.content.split(" ");
-	if(!message.channel.permissionsFor(message.author).has('MANAGE_ROLES')) return sendMessage(message.channel, `Tu n\'as pas la permission de faire cette commande!`)
+	if(!message.channel.permissionsFor(message.author).has('MANAGE_ROLES')){
+		return sendMessage(message.channel, `Tu n\'as pas la permission de faire cette commande!`);
+	}
 
 	if (command == "!victoire") {
 			changeScore(args, message, 5, 'Victoire');
