@@ -2,15 +2,15 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 
 function setActivity(nbr) {
-	if (nbr % 5 == 0)
-		client.user.setActivity("la mère de tom", { type: "WATCHING" });
-	else if (nbr % 5 == 2)
-		client.user.setActivity("baiser la mère de tom", { type: "PLAYING" });
-	else if (nbr % 5 == 3)
-		client.user.setActivity("du porno avec la mère de tom", { type: "STREAMING" });
-	else if (nbr % 5 == 4)
-		client.user.setActivity("tom pleurer", { type: "LISTENING" });
+	const modulo = nbr % 5;
+	switch(modulo){
+		case 0: client.user.setActivity("la mère de tom", { type: "WATCHING" }); break;
+		case 2: client.user.setActivity("baiser la mère de tom", { type: "PLAYING" }); break;
+		case 3: client.user.setActivity("du porno avec la mère de tom", { type: "STREAMING" }); break;
+		case 4: client.user.setActivity("tom pleurer", { type: "LISTENING" });
+	}
 }
+
 client.on('ready', () => {
 	let nbr = 0;
 	setInterval(() => {
