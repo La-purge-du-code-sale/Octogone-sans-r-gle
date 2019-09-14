@@ -2,8 +2,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 
 function setActivity(nbr) {
-	const modulo = nbr % 5;
-	switch(modulo){
+	switch(nbr % 5){
 		case 0: client.user.setActivity("la mère de tom", { type: "WATCHING" }); break;
 		case 2: client.user.setActivity("baiser la mère de tom", { type: "PLAYING" }); break;
 		case 3: client.user.setActivity("du porno avec la mère de tom", { type: "STREAMING" }); break;
