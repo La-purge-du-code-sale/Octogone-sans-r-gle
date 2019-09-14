@@ -13,23 +13,25 @@ function setActivity(nbr) {
 client.on('ready', () => {
 	let nbr = 0;
 	setInterval(() => {
-		nbr++;
-		setActivity(nbr);
+		setActivity(++nbr);
 	}, 15000);
 	console.log(`Logged in as ${client.user.tag}!`);
 })
 
-client.on('guildMemberAdd', (guildMember) => {
+function changeCountMessage(guildMember) {
 	const guild = guildMember.guild;
+	guild.channels.get('622502380541444116').setName(`${guild.members.array().length} personnes`);
+}
+
+client.on('guildMemberAdd', (guildMember) => {
 	guildMember.addRole(guild.roles.find(role => role.name === 'Victimes'));
 	guildMember.setNickname(`[0] ${guildMember.user.username}`);
-	guild.channels.get('622502380541444116').setName(`${guild.members.array().length} personnes`);
+	changeCountMessage(guildMember)
 });
 
 // TODO Refactor it, it has some duplicated code
 client.on("guildMemberRemove", (guildMember) => {
-	// NOTE: Maybe here lays an error, guildMember.guild.(...) is maybe more appropriate
-	guild.channels.get('622502380541444116').setName(`${[...guild.members].length} personnes`);
+	changeCountMessage(guildMember)
 });
 
 client.on('messageReactionAdd', (reaction, user) => {
@@ -46,14 +48,16 @@ client.on('messageReactionAdd', (reaction, user) => {
 });
 
 client.on('messageReactionRemove', (reaction, user) => {
-	if (!user) return;
-	if (user.bot) return;
-	if (!reaction.message.channel.guild) return;
+	if (!user || user.bot || !reaction.message.channel.guild) return;
 	if (reaction.message.channel.id !== '622498999529766942') return;
-	let role = reaction.message.guild.roles.find(role => role.name === "Victimes");
-	reaction.message.guild.member(user).addRole(role).catch(console.error);
-	role = reaction.message.guild.roles.find(role => role.name === "Racailles du bac à sable");
-	reaction.message.guild.member(user).removeRole(role).catch(console.error);
+	const roleVictime = reaction.message.guild.roles.find(role => role.name === "Victimes");
+	const roleRacailles = reaction.message.guild.roles.find(role => role.name === "Racailles du bac à sable");
+	try {
+		reaction.message.guild.member(user).addRole(roleVictime)
+		reaction.message.guild.member(user).removeRole(roleRacailles)	
+	} catch {
+		console.error
+	}
 });
 
 client.on('raw', packet => {
