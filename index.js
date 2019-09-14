@@ -144,7 +144,7 @@ function changeScore(args, message, nbr, msg) {
 client.on('message', (message) => {
 	const [command, ...args] = message.content.split(" ");
 	if(!message.channel.permissionsFor(message.author).has('MANAGE_ROLES')){
-		return sendMessage(message.channel, `Tu n\'as pas la permission de faire cette commande!`);
+		return sendMessage(message.channel, "Tu n'as pas la permission de faire cette commande!");
 	}
 
 	if (command == "!victoire") {
