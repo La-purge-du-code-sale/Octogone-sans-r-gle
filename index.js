@@ -93,11 +93,9 @@ function changeScore(args, message, nbr, msg) {
 				i++;
 			}
 		}
-		let nbr1;
-		if (nbr)
-			nbr1 = parseInt(user.nickname.split('[')[1].split(']')[0]) + nbr;
-		else
-			nbr1 = 0;
+		let nbr1 = 0;
+		if (nbr) nbr1 = parseInt(user.nickname.split('[')[1].split(']')[0]) + nbr;
+			
 		user.setNickname(`[${nbr1}] ${nickname}`)
 			.catch(err => sendMessage(message.channel, `${err}`));
 		sendMessage(message.channel, `${msg} de ${args[1]}!\n${nickname} a maintenant un score de ${nbr1}`);
