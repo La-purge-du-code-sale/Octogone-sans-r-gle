@@ -1,0 +1,19 @@
+{
+  "name": "octogone-sans-r-gle",
+  "version": "1.0.0",
+  "description": "Bot discord contenant du code clean",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/La-purge-du-code-sale/Octogone-sans-r-gle.git"
+  },
+  "author": "EnderDragonneau",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/La-purge-du-code-sale/Octogone-sans-r-gle/issues"
+  },
+  "homepage": "https://github.com/La-purge-du-code-sale/Octogone-sans-r-gle#readme"
+}
