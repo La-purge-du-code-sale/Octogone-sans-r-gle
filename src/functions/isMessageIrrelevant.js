@@ -1,3 +1,7 @@
+/**
+ * @param  {MessageReaction} reaction
+ * @param  {User} user
+ */
 const isMessageIrrelevant = (reaction, user) => {
   if (
     !user ||

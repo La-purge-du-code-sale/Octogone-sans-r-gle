@@ -2,6 +2,9 @@ import { prefix } from '../globals.js';
 import commands from '../commands.js';
 import sendEmbedMessage from '../functions/sendEmbedMessage.js';
 
+/**
+ * @param  {Message} msg
+ */
 const message = (msg) => {
   if (!msg.content.startsWith(prefix) || msg.author.bot) {
     return;

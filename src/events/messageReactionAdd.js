@@ -1,5 +1,9 @@
 import isMessageIrrelevant from '../functions/isMessageIrrelevant.js';
 
+/**
+ * @param  {MessageReaction} reaction
+ * @param  {User} user
+ */
 const messageReactionAdd = (reaction, user) => {
   if (isMessageIrrelevant()) {
     return;

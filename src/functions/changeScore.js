@@ -1,6 +1,12 @@
 import getUser from './getUser.js';
 import sendEmbedMessage from './sendEmbedMessage.js';
 
+/**
+ * @param  {Message} msg
+ * @param  {Array} args
+ * @param  {Number} number
+ * @param  {String} msgToSend
+ */
 const changeScore = (msg, args, number, msgToSend) => {
   const user = getUser(msg, args);
   if (user) {

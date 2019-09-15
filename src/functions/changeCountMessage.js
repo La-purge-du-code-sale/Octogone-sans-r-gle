@@ -1,3 +1,6 @@
+/**
+ * @param  {GuildMember} guildMember
+ */
 const changeCountMessage = (guildMember) => {
   const guild = guildMember.guild;
   guild.channels
