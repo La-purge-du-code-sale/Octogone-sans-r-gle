@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "Bot discord contenant du code clean",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --experimental-modules index.js"
   },
   "repository": {
     "type": "git",
@@ -16,7 +17,10 @@
     "url": "https://github.com/La-purge-du-code-sale/Octogone-sans-r-gle/issues"
   },
   "homepage": "https://github.com/La-purge-du-code-sale/Octogone-sans-r-gle#readme",
-  "dependencies": {},
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "dotenv": "^8.1.0"
+  },
   "devDependencies": {
     "eslint": "^6.4.0",
     "prettier": "^1.18.2"
